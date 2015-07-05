@@ -60,15 +60,11 @@ template '/etc/init.d/solr' do
   variables(
     :solr_dir => extract_path,
     :solr_home => node['solr']['data_dir'],
-    :port => node['solr']['port'],
-    :pid_file => node['solr']['pid_file'],
-    :log_file => node['solr']['log_file'],
-    :user => node['solr']['user'],
-    :java_options => node['solr']['java_options']
+    :pid_file => node['solr']['pid_file']
   )
 end
 
 service 'solr' do
-  supports :restart => true, :status => true
-  action [:enable, :start]
+  supports [ :start, :stop, :reload, :restart, :status ]
+  action [ :enable, :start ]
 end
