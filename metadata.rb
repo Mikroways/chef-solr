@@ -1,10 +1,10 @@
 name             'solr'
-maintainer       'David Radcliffe'
-maintainer_email 'radcliffe.david@gmail.com'
+maintainer       'Leandro Di Tommaso'
+maintainer_email 'leandro.ditommaso@mikroways.net'
 license          'MIT'
 description      'Installs the solr search engine.'
 long_description 'See README.md'
-version          '0.4.0'
+version          '0.5.0'
 
 supports 'amazon'
 supports 'centos'

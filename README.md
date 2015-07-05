@@ -2,6 +2,10 @@
 
 Installs [solr](http://lucene.apache.org/solr/) and starts the service.
 
+## About this fork
+
+This fork was modified to use Solr version 5.2.1, working for Debian family.
+
 ## Recipes
 
 - `default` - This will install java, download solr and setup the service
