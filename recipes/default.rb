@@ -59,8 +59,7 @@ template '/etc/init.d/solr' do
   mode '0755'
   variables(
     :solr_dir => extract_path,
-    :solr_home => node['solr']['data_dir'],
-    :pid_file => node['solr']['pid_file']
+    :port => node['solr']['port']
   )
 end
 

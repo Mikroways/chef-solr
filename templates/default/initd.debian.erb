@@ -11,15 +11,10 @@
 ### END INIT INFO
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-SOLR_HOME=<%= @solr_home %>
 SOLR_DIR=<%= @solr_dir %>
 PORT=<%= @port %>
-PIDFILE=<%= @pid_file %>
-USER=<%= @user %>
-DESC="start/stop Solr Server"
-NAME=solr
 DAEMON=<%= @solr_dir %>/bin/solr
-DAEMON_ARGS="-p $PORT -s $SOLR_HOME"
+DAEMON_ARGS="-p $PORT"
 SCRIPTNAME=/etc/init.d/$NAME
 
 # Exit gracefully if the package is not installed
@@ -38,15 +33,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 #
 do_start()
 {
-  # Return
-  #   0 if daemon has been started
-  #   1 if daemon was already running
-  #   2 if daemon could not be started
-  start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER --exec $DAEMON --test -- $DAEMON_ARGS > /dev/null \
-    || return 1
-  start-stop-daemon --start --quiet --pidfile $PIDFILE --chuid $USER --chdir $SOLR_DIR --background --make-pidfile --exec $DAEMON -- \
-    $DAEMON_ARGS \
-    || return 2
+  $DAEMON $DAEMON_ARGS
   sleep 2
 }
 
@@ -55,55 +42,27 @@ do_start()
 #
 do_stop()
 {
-  # Return
-  #   0 if daemon has been stopped
-  #   1 if daemon was already stopped
-  #   2 if daemon could not be stopped
-  #   other if a failure occurred
-  start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE
-  RETVAL="$?"
-  [ "$RETVAL" = 2 ] && return 2
-  rm -f $PIDFILE
-  return "$RETVAL"
+  $DAEMON stop
+}
+
+do_status()
+{
+  $DAEMON status
 }
 
 case "$1" in
   start)
-  [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
   do_start
-  case "$?" in
-    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-  esac
   ;;
   stop)
-  [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
   do_stop
-  case "$?" in
-    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
-    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
-  esac
   ;;
   status)
-       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
-       ;;
+  do_status
+  ;;
   restart|force-reload)
-  log_daemon_msg "Restarting $DESC" "$NAME"
   do_stop
-  case "$?" in
-    0|1)
-    do_start
-    case "$?" in
-      0) log_end_msg 0 ;;
-      1) log_end_msg 1 ;; # Old process is still running
-      *) log_end_msg 1 ;; # Failed to start
-    esac
-    ;;
-    *)
-      # Failed to stop
-    log_end_msg 1
-    ;;
-  esac
+  do_start
   ;;
   *)
   echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
